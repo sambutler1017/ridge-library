@@ -1,1 +1,1 @@
-# ridge-library
+# ridge-websocket-client
