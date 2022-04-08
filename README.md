@@ -1,1 +1,1 @@
-# ridge-websocket-client
+# Senior Design North Ridgeville Library
