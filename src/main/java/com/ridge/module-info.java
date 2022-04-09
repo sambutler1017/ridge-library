@@ -2,6 +2,7 @@ module com.ridge {
     requires rxjava;
     requires jackson.databind;
     requires jackson.core;
+    requires jackson.annotations;
     requires org.slf4j;
     requires org.slf4j.simple;
     requires transitive spring.messaging;
@@ -10,11 +11,12 @@ module com.ridge {
     requires spring.web;
     requires spring.context;
     requires spring.websocket;
-    requires java.net.http;
+    requires transitive java.net.http;
     requires java.sql;
 
-    exports com.ridge;
     exports com.ridge.api;
     exports com.ridge.socket;
     exports com.ridge.mapper;
+    // exports com.ridge.test;
+    // exports com.ridge.test.domain;
 }

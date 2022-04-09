@@ -2,7 +2,6 @@ package com.ridge.api;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublisher;
@@ -10,9 +9,9 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -26,6 +25,8 @@ public class ApiClient {
 
     private ObjectMapper objectMapper;
 
+    private String AUTH;
+
     public ApiClient() {
         this.BASE_URL = "";
         this.objectMapper = new ObjectMapper();
@@ -37,36 +38,27 @@ public class ApiClient {
     }
 
     /**
+     * Method for setting the authorization on requests being sent.
+     * 
+     * @param auth The authorization
+     */
+    public void setAuthorization(String auth) {
+        this.AUTH = auth;
+    }
+
+    /**
      * This will do a get on the passed in API. It will then cast the results to the
      * passed in object.
      * 
-     * @throws InterruptedException
-     * @throws IOException
+     * @param api   The endpoint to hit
+     * @param clazz The class to cast it too.
+     * @throws Exception
      */
     public <T> T get(String api, Class<T> clazz) throws Exception {
         var client = HttpClient.newHttpClient();
 
         // create a request
-        var request = getBuilder(api).GET().build();
-
-        // use the client to send the request
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), clazz);
-    }
-
-    /**
-     * This will do a post on the passed in API. It will then cast the results to
-     * the passed in object.
-     * 
-     * @return The passed in object class.
-     * @throws InterruptedException
-     * @throws IOException
-     */
-    public <T> T post(String api, Map<String, Object> body, Class<T> clazz) throws Exception {
-        var client = HttpClient.newHttpClient();
-
-        // create a request
-        var request = getBuilder(api).POST(paramFormatter(body)).build();
+        var request = getBuilder(api).GET().header("accept", "application/json").build();
 
         // use the client to send the request
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
@@ -85,11 +77,30 @@ public class ApiClient {
         var client = HttpClient.newHttpClient();
 
         // create a request
-        var request = getBuilder(api).POST(paramFormatter(body)).build();
+        var request = getBuilder(api).POST(paramFormatter(body)).header("Content-Type", "application/json").build();
 
         // use the client to send the request
         HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
         return response.statusCode();
+    }
+
+    /**
+     * This will do a post on the passed in API. It will then cast the results to
+     * the passed in object.
+     * 
+     * @return The passed in object class.
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public <T> T post(String api, Map<String, Object> body, Class<T> clazz) throws Exception {
+        var client = HttpClient.newHttpClient();
+
+        // create a request
+        var request = getBuilder(api).POST(paramFormatter(body)).header("Content-Type", "application/json").build();
+
+        // use the client to send the request
+        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        return objectMapper.readValue(response.body(), clazz);
     }
 
     /**
@@ -99,7 +110,11 @@ public class ApiClient {
      * @return The builder instance.
      */
     public Builder getBuilder(String api) {
-        return HttpRequest.newBuilder(URI.create(BASE_URL + api)).header("accept", "application/json");
+        Builder httpBuilder = HttpRequest.newBuilder(URI.create(BASE_URL + api));
+        if (AUTH != null && !"".equals(this.AUTH.trim())) {
+            httpBuilder.header("Authorization", this.AUTH);
+        }
+        return httpBuilder;
     }
 
     /**
@@ -107,17 +122,12 @@ public class ApiClient {
      * 
      * @param data The body to be formatted
      * @return {@link BodyPublisher}
+     * @throws JsonProcessingException
      */
-    private BodyPublisher paramFormatter(Map<String, Object> data) {
-        var builder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            if (builder.length() > 0) {
-                builder.append("&");
-            }
-            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
-            builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
-        }
-        return BodyPublishers.ofString(builder.toString());
+    private BodyPublisher paramFormatter(Map<String, Object> data) throws JsonProcessingException {
+        String requestBody = objectMapper
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(data);
+        return BodyPublishers.ofString(requestBody);
     }
 }
