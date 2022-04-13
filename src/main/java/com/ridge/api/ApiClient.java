@@ -59,12 +59,8 @@ public class ApiClient {
      * @throws Exception
      */
     public <T> T get(String api, Class<T> clazz) throws Exception {
-        // create a request
         var request = getBuilder(api).GET().build();
-
-        // use the client to send the request
-        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-        return objectMapper.readValue(response.body(), clazz);
+        return send(request, clazz);
     }
 
     /**
@@ -76,12 +72,8 @@ public class ApiClient {
      * @throws IOException
      */
     public <T> int post(String api, Map<String, Object> body) throws Exception {
-        // create a request
         var request = getBuilder(api).POST(paramFormatter(body)).build();
-
-        // use the client to send the request
-        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-        return response.statusCode();
+        return send(request).statusCode();
     }
 
     /**
@@ -93,11 +85,36 @@ public class ApiClient {
      * @throws IOException
      */
     public <T> T post(String api, Map<String, Object> body, Class<T> clazz) throws Exception {
-        // create a request
         var request = getBuilder(api).POST(paramFormatter(body)).build();
+        return send(request, clazz);
+    }
 
-        // use the client to send the request
-        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+    /**
+     * This will perform the api call to send the request. It will than consume the
+     * api and get the response. It will return the {@link HttpResponse} object that
+     * was returned.
+     * 
+     * @param req The request to send.
+     * @return {@link HttpResponse} data object.
+     * @throws Exception If the request could not be sent.
+     */
+    private HttpResponse<String> send(HttpRequest req) throws Exception {
+        return httpClient.send(req, BodyHandlers.ofString());
+    }
+
+    /**
+     * This will perform the api call to send the request. It will than consume the
+     * api and get the response. Once the response is returned it will then cast the
+     * response to the passed in class data type.
+     * 
+     * @param <T>   The object to cast the result as.
+     * @param req   The request to send.
+     * @param clazz The class object.
+     * @return {@link HttpResponse} data object.
+     * @throws Exception If the request could not be sent.
+     */
+    private <T> T send(HttpRequest req, Class<T> clazz) throws Exception {
+        var response = send(req);
         return objectMapper.readValue(response.body(), clazz);
     }
 
@@ -107,9 +124,11 @@ public class ApiClient {
      * @param api The api to be hit.
      * @return The builder instance.
      */
-    public Builder getBuilder(String api) {
-        Builder httpBuilder = HttpRequest.newBuilder(URI.create(BASE_URL + api))
-                .header("Content-Type", "application/json").header("Content-Type", "application/json");
+    private Builder getBuilder(String api) {
+        Builder httpBuilder = HttpRequest
+                .newBuilder(URI.create(BASE_URL + api))
+                .header("Content-Type", "application/json")
+                .header("Content-Type", "application/json");
         if (AUTH != null && !"".equals(this.AUTH.trim())) {
             httpBuilder.header("Authorization", this.AUTH);
         }
