@@ -1,13 +1,10 @@
 package com.ridge.test;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.ridge.api.ApiClient;
 import com.ridge.test.domain.AuthToken;
-import com.ridge.test.domain.User;
 
 /**
  * Example test class for testing the api client library
@@ -22,10 +19,13 @@ public class ApiClientTest {
         auth.put("email", "sambutler1017@icloud.com");
         auth.put("password", "78e05bf74fad284798a195ec2ff3ae6D!");
 
-        AuthToken data = client.post("/authenticate", auth, AuthToken.class);
-        client.setAuthorization("Bearer: " + data.getToken());
+        client.post("/authenticate", auth, AuthToken.class);
 
-        List<User> testList = Arrays.asList(client.get("/api/user-app/user-profile", User[].class));
-        int test = 1;
+        // List<User> testList = Arrays.asList(client.get("/api/user-app/user-profile",
+        // User[].class));
+        // int test = 1;
+
+        while (true) {
+        }
     }
 }
