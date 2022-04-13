@@ -25,16 +25,20 @@ public class ApiClient {
 
     private ObjectMapper objectMapper;
 
+    private HttpClient httpClient;
+
     private String AUTH;
 
     public ApiClient() {
         this.BASE_URL = "";
         this.objectMapper = new ObjectMapper();
+        this.httpClient = HttpClient.newHttpClient();
     }
 
     public ApiClient(String url) {
         this.BASE_URL = url;
         this.objectMapper = new ObjectMapper();
+        this.httpClient = HttpClient.newHttpClient();
     }
 
     /**
@@ -55,13 +59,11 @@ public class ApiClient {
      * @throws Exception
      */
     public <T> T get(String api, Class<T> clazz) throws Exception {
-        var client = HttpClient.newHttpClient();
-
         // create a request
-        var request = getBuilder(api).GET().header("accept", "application/json").build();
+        var request = getBuilder(api).GET().build();
 
         // use the client to send the request
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
         return objectMapper.readValue(response.body(), clazz);
     }
 
@@ -74,13 +76,11 @@ public class ApiClient {
      * @throws IOException
      */
     public <T> int post(String api, Map<String, Object> body) throws Exception {
-        var client = HttpClient.newHttpClient();
-
         // create a request
-        var request = getBuilder(api).POST(paramFormatter(body)).header("Content-Type", "application/json").build();
+        var request = getBuilder(api).POST(paramFormatter(body)).build();
 
         // use the client to send the request
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
         return response.statusCode();
     }
 
@@ -93,13 +93,11 @@ public class ApiClient {
      * @throws IOException
      */
     public <T> T post(String api, Map<String, Object> body, Class<T> clazz) throws Exception {
-        var client = HttpClient.newHttpClient();
-
         // create a request
-        var request = getBuilder(api).POST(paramFormatter(body)).header("Content-Type", "application/json").build();
+        var request = getBuilder(api).POST(paramFormatter(body)).build();
 
         // use the client to send the request
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
         return objectMapper.readValue(response.body(), clazz);
     }
 
@@ -110,7 +108,8 @@ public class ApiClient {
      * @return The builder instance.
      */
     public Builder getBuilder(String api) {
-        Builder httpBuilder = HttpRequest.newBuilder(URI.create(BASE_URL + api));
+        Builder httpBuilder = HttpRequest.newBuilder(URI.create(BASE_URL + api))
+                .header("Content-Type", "application/json").header("Content-Type", "application/json");
         if (AUTH != null && !"".equals(this.AUTH.trim())) {
             httpBuilder.header("Authorization", this.AUTH);
         }
