@@ -225,7 +225,7 @@ public class ApiClient {
         Builder httpBuilder = HttpRequest
                 .newBuilder(URI.create(BASE_URL + api))
                 .header("Content-Type", "application/json")
-                .header("Content-Type", "application/json");
+                .header("accept", "application/json");
         if (AUTH != null && !"".equals(this.AUTH.trim())) {
             httpBuilder.header("Authorization", this.AUTH);
         }
