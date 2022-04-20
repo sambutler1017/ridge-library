@@ -98,6 +98,41 @@ public class ApiClient {
     }
 
     /**
+     * This will do a post on the passed in API. It will then cast the results to
+     * the passed in object.
+     * 
+     * @param <T>  The object to cast the result as.
+     * @param api  The endpoint to hit.
+     * @param body The body to pass with the post request.
+     * @return The passed in object class.
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public <T> HttpResponse<String> post(String api, T body) throws Exception {
+        String jsonData = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(body);
+        var request = getBuilder(api).POST(BodyPublishers.ofString(jsonData)).build();
+        return send(request);
+    }
+
+    /**
+     * This will do a post on the passed in API. It will then cast the results to
+     * the passed in object.
+     * 
+     * @param <T>   The object to cast the result as.
+     * @param api   The endpoint to hit.
+     * @param body  The body to pass with the post request.
+     * @param clazz The class to cast it too.
+     * @return The passed in object class.
+     * @throws InterruptedException
+     * @throws IOException
+     */
+    public <T, R> R post(String api, T body, Class<R> clazz) throws Exception {
+        String jsonData = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(body);
+        var request = getBuilder(api).POST(BodyPublishers.ofString(jsonData)).build();
+        return send(request, clazz);
+    }
+
+    /**
      * This will do a get on the passed in API. It will then cast the results to the
      * passed in object. It will wrap the data returned in a subject to watch when
      * the API returns.

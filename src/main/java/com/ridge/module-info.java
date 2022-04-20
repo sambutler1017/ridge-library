@@ -18,6 +18,6 @@ module com.ridge {
     exports com.ridge.api;
     exports com.ridge.socket;
     exports com.ridge.mapper;
-    // exports com.ridge.test;
-    // exports com.ridge.test.domain;
+    exports com.ridge.test;
+    exports com.ridge.test.domain;
 }
