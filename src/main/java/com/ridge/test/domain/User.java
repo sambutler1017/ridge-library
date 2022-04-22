@@ -38,6 +38,8 @@ public class User {
 
 	private Date insertDate;
 
+	private Date lastLoginDate;
+
 	@JsonInclude(Include.NON_DEFAULT)
 	private long salt;
 
@@ -151,5 +153,13 @@ public class User {
 
 	public void setSalt(long salt) {
 		this.salt = salt;
+	}
+
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
 	}
 }

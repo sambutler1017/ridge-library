@@ -1,6 +1,7 @@
 package com.ridge.test;
 
 import com.ridge.socket.WebSocketClient;
+import com.ridge.test.domain.CurrentSystemSettings;
 
 public class SocketClientTest {
     private static final String BASE_URL = "ws://localhost:8080/api/websocket";
@@ -48,6 +49,7 @@ public class SocketClientTest {
      * @param socketClient The client for the socket.
      */
     private static void addListeners(WebSocketClient socketClient) {
-        socketClient.listen("/topic/lights", Boolean.class).subscribe(res -> System.out.println("Lights On: " + res));
+        socketClient.listen("/topic/update-system", CurrentSystemSettings.class)
+                .subscribe(res -> System.out.println("Lights On: " + res.getId()));
     }
 }

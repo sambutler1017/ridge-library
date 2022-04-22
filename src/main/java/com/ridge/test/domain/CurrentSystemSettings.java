@@ -1,186 +1,178 @@
 package com.ridge.test.domain;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CurrentSystemSettings {
-    private int Id;
 
-    private int SystemId;
+    private int id;
 
-    private int PlantName;
+    private int tier;
 
-    private LocalDate GrowStartDate;
+    private int plantName;
 
-    private int NumPlants;
+    private Date growStartDate;
 
-    private float MinPH;
+    private int numPlants;
 
-    private float MaxPH;
+    private float minPH;
 
-    private float MinTDS;
+    private float maxPH;
 
-    private float MaxTDS;
+    private float minTDS;
 
-    private float MinWaterTemp;
+    private float maxTDS;
 
-    private float MaxWaterTemp;
+    private float minWaterTemp;
 
-    private float MinHumidity;
+    private float maxWaterTemp;
 
-    private float MaxHumidity;
+    private float minHumidity;
 
-    private float PlantTemp;
+    private float maxHumidity;
 
-    private LocalDate LightOnTime;
+    private Date lightOnTime;
 
-    private LocalDate LightOffTime;
+    private Date lightOffTime;
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int id) {
-        Id = id;
+        this.id = id;
     }
 
-    public int getSystemId() {
-        return SystemId;
+    public int getTier() {
+        return tier;
     }
 
-    public void setSystemId(int systemId) {
-        SystemId = systemId;
+    public void setTier(int tier) {
+        this.tier = tier;
     }
 
     public int getPlantName() {
-        return PlantName;
+        return plantName;
     }
 
     public void setPlantName(int plantName) {
-        PlantName = plantName;
+        this.plantName = plantName;
     }
 
-    public LocalDate getGrowStartDate() {
-        return GrowStartDate;
+    public Date getGrowStartDate() {
+        return growStartDate;
     }
 
-    public void setGrowStartDate(LocalDate growStartDate) {
-        GrowStartDate = growStartDate;
+    public void setGrowStartDate(Date growStartDate) {
+        this.growStartDate = growStartDate;
     }
 
     public int getNumPlants() {
-        return NumPlants;
+        return numPlants;
     }
 
     public void setNumPlants(int numPlants) {
-        NumPlants = numPlants;
+        this.numPlants = numPlants;
     }
 
     public float getMinPH() {
-        return MinPH;
+        return minPH;
     }
 
     public void setMinPH(float minPH) {
-        MinPH = minPH;
+        this.minPH = minPH;
     }
 
     public float getMaxPH() {
-        return MaxPH;
+        return maxPH;
     }
 
     public void setMaxPH(float maxPH) {
-        MaxPH = maxPH;
+        this.maxPH = maxPH;
     }
 
     public float getMinTDS() {
-        return MinTDS;
+        return minTDS;
     }
 
     public void setMinTDS(float minTDS) {
-        MinTDS = minTDS;
+        this.minTDS = minTDS;
     }
 
     public float getMaxTDS() {
-        return MaxTDS;
+        return maxTDS;
     }
 
     public void setMaxTDS(float maxTDS) {
-        MaxTDS = maxTDS;
+        this.maxTDS = maxTDS;
     }
 
     public float getMinWaterTemp() {
-        return MinWaterTemp;
+        return minWaterTemp;
     }
 
     public void setMinWaterTemp(float minWaterTemp) {
-        MinWaterTemp = minWaterTemp;
+        this.minWaterTemp = minWaterTemp;
     }
 
     public float getMaxWaterTemp() {
-        return MaxWaterTemp;
+        return maxWaterTemp;
     }
 
     public void setMaxWaterTemp(float maxWaterTemp) {
-        MaxWaterTemp = maxWaterTemp;
+        this.maxWaterTemp = maxWaterTemp;
     }
 
     public float getMinHumidity() {
-        return MinHumidity;
+        return minHumidity;
     }
 
     public void setMinHumidity(float minHumidity) {
-        MinHumidity = minHumidity;
+        this.minHumidity = minHumidity;
     }
 
     public float getMaxHumidity() {
-        return MaxHumidity;
+        return maxHumidity;
     }
 
     public void setMaxHumidity(float maxHumidity) {
-        MaxHumidity = maxHumidity;
+        this.maxHumidity = maxHumidity;
     }
 
-    public void setPlantTemp(float plantTemp) {
-        PlantTemp = plantTemp;
+    public Date getLightOnTime() {
+        return lightOnTime;
     }
 
-    public float getPlantTemp() {
-        return PlantTemp;
+    public void setLightOnTime(Date lightOnTime) {
+        this.lightOnTime = lightOnTime;
     }
 
-    public LocalDate getLightOnTime() {
-        return LightOnTime;
+    public Date getLightOffTime() {
+        return lightOffTime;
     }
 
-    public void setLightOnTime(LocalDate lightOnTime) {
-        LightOnTime = lightOnTime;
-    }
-
-    public LocalDate getLightOffTime() {
-        return LightOffTime;
-    }
-
-    public void setLightOffTime(LocalDate lightOffTime) {
-        LightOffTime = lightOffTime;
+    public void setLightOffTime(Date lightOffTime) {
+        this.lightOffTime = lightOffTime;
     }
 
     @Override
     public String toString() {
-        return this.getSystemId() + ","
+        return this.getTier() + ","
                 + this.getMinPH() + ","
                 + this.getMaxPH() + ","
                 + this.getMinTDS() + ","
                 + this.getMaxTDS() + ","
                 + this.getMinWaterTemp() + ","
                 + this.getMaxWaterTemp() + ","
-                + this.getPlantTemp() + ","
-                + this.getLightOnTime() + ","
-                + this.getLightOffTime() + ","
-                + LocalDateTime.now().getDayOfMonth() + ","
-                + LocalDateTime.now().getYear() + ","
-                + LocalDateTime.now().getHour() + ","
-                + LocalDateTime.now().getMinute() + ","
-                + LocalDateTime.now().getSecond();
+                + formatDate(this.getLightOnTime(), "HH:mm") + ","
+                + formatDate(this.getLightOffTime(), "HH:mm") + ","
+                + formatDate(null, "MM.dd.yy.HH.mm.ss");
+    }
+
+    private String formatDate(Date dt, String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        String dateString = simpleDateFormat.format(dt != null ? dt : new Date());
+        return dateString;
     }
 
 }
