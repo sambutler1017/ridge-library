@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -25,6 +26,8 @@ public class WebSocketClient {
     private final int RECONNECT_DELAY = 5000;
 
     private final Logger LOGGER = LoggerFactory.getLogger(WebSocketClient.class);
+
+    private WebSocketStompClient stompClient;
 
     private StompSession session;
 
@@ -47,6 +50,7 @@ public class WebSocketClient {
         this.CONNECT_SUBJECT = BehaviorSubject.create();
         this.DISCONNECT_SUBJECT = BehaviorSubject.create();
         this.url = "";
+        initClient();
     }
 
     /**
@@ -60,6 +64,7 @@ public class WebSocketClient {
         this.DISCONNECT_SUBJECT = BehaviorSubject.create();
         this.url = "";
         this.handler = handler;
+        initClient();
     }
 
     /**
@@ -71,6 +76,7 @@ public class WebSocketClient {
         this.CONNECT_SUBJECT = BehaviorSubject.create();
         this.DISCONNECT_SUBJECT = BehaviorSubject.create();
         this.url = url;
+        initClient();
     }
 
     /**
@@ -85,6 +91,7 @@ public class WebSocketClient {
         this.DISCONNECT_SUBJECT = BehaviorSubject.create();
         this.url = url;
         this.handler = handler;
+        initClient();
     }
 
     /**
@@ -248,11 +255,6 @@ public class WebSocketClient {
         this.isForceDisconnect = false;
         this.handler = this.handler == null ? new SocketSessionHandler() : this.handler;
 
-        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        stompClient.setDefaultHeartbeat(new long[] { 20000, 20000 });
-        stompClient.setTaskScheduler(taskScheduler());
-
         do {
             LOGGER.info("Connecting to Socket url '{}'...", this.url);
             try {
@@ -369,13 +371,23 @@ public class WebSocketClient {
     }
 
     /**
+     * Initializes the stomp client for the service.
+     */
+    private void initClient() {
+        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        stompClient.setDefaultHeartbeat(new long[] { 20000, 20000 });
+        stompClient.setTaskScheduler(taskScheduler());
+    }
+
+    /**
      * Creates a default task scheduler for setting a heartbeat with the server
      * 
      * @return {@link ThreadPoolTaskScheduler}
      */
-    private ThreadPoolTaskScheduler taskScheduler() {
+    private TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
-        ts.setPoolSize(10);
+        ts.setPoolSize(3);
         ts.afterPropertiesSet();
         return ts;
     }
