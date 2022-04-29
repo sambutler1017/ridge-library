@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -249,6 +250,8 @@ public class WebSocketClient {
 
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        stompClient.setDefaultHeartbeat(new long[] { 20000, 20000 });
+        stompClient.setTaskScheduler(taskScheduler());
 
         do {
             LOGGER.info("Connecting to Socket url '{}'...", this.url);
@@ -363,5 +366,17 @@ public class WebSocketClient {
      */
     public StompSession getSession() {
         return this.session;
+    }
+
+    /**
+     * Creates a default task scheduler for setting a heartbeat with the server
+     * 
+     * @return {@link ThreadPoolTaskScheduler}
+     */
+    private ThreadPoolTaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
+        ts.setPoolSize(10);
+        ts.afterPropertiesSet();
+        return ts;
     }
 }

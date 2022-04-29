@@ -7,7 +7,6 @@ public class SocketClientTest {
     private static final String BASE_URL = "ws://localhost:8080/api/websocket";
 
     public static void run() throws Exception {
-        // normalSocketConnectionExample();
         asyncSocketConnectionExample();
 
         while (true) {
@@ -23,23 +22,6 @@ public class SocketClientTest {
     public static void asyncSocketConnectionExample() {
         WebSocketClient socketClient = new WebSocketClient();
         socketClient.connectAsync(BASE_URL).subscribe(res -> addListeners(socketClient));
-        System.out.println("After Socket Client Connect");
-    }
-
-    /**
-     * Simple synchronous example of the blocking functionality of the
-     * {@link WebSocketClient#connect()}. This will not continue through the code
-     * until a connection has been made.
-     */
-    public static void normalSocketConnectionExample() {
-        WebSocketClient socketClient = new WebSocketClient();
-        socketClient.connect(BASE_URL);
-        addListeners(socketClient);
-
-        socketClient.onDisconnect().subscribe(res -> {
-            socketClient.reconnect();
-            addListeners(socketClient);
-        });
         System.out.println("After Socket Client Connect");
     }
 

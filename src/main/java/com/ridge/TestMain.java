@@ -1,6 +1,6 @@
 package com.ridge;
 
-import com.ridge.test.ApiClientTest;
+import com.ridge.test.SocketClientTest;
 
 /**
  * Simple example of connecting and subscribing to a websocket
@@ -11,8 +11,8 @@ import com.ridge.test.ApiClientTest;
 public class TestMain {
 
     public static void main(String[] args) throws Exception {
-        // SocketClientTest.run();
-        ApiClientTest.run();
+        SocketClientTest.run();
+        // ApiClientTest.run();
         // JSONMapperTest.run();
     }
 }
